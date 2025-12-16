@@ -49,12 +49,11 @@ def _(mo):
 
     # 2. Try to get Account ID from URL parameters
     query_params = mo.query_params()
-    initial_account_id = (
-        query_params.get("act") or None
-    )  # meta ads urls contain ?act= so it's easy to find and reuse
+    print(query_params)
+    initial_account_id = (query_params.get("act") or "")  # meta ads urls contain ?act= so it's easy to find and reuse
+    print(type(initial_account_id))
 
-
-    account_id = mo.ui.number(value=initial_account_id, label="Account ID:")
+    account_id = mo.ui.text(value=initial_account_id, label="Account ID:")
     return (account_id,)
 
 
