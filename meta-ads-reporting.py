@@ -7,12 +7,10 @@ app = marimo.App(width="full")
 @app.cell
 def _():
     import marimo as mo
-    import requests
     import pandas as pd
+    import altair as alt
 
     import datetime
-    import json
-
 
     from utils.api_schema import API_CONFIG
     from utils.data_processing import (
@@ -50,7 +48,8 @@ def _(mo):
     # 2. Try to get Account ID from URL parameters
     query_params = mo.query_params()
     print(query_params)
-    initial_account_id = (query_params.get("act") or "")  # meta ads urls contain ?act= so it's easy to find and reuse
+    # meta ads urls contain ?act= so it's easy to find and reuse
+    initial_account_id = (query_params.get("act") or "")
     print(type(initial_account_id))
 
     account_id = mo.ui.text(value=initial_account_id, label="Account ID:")
@@ -77,7 +76,8 @@ def _(datetime, mo):
 def _(access_token, account_id, mo):
     auth_tab = mo.vstack(
         [
-            mo.hstack([access_token, account_id], justify="start", align="center"),
+            mo.hstack([access_token, account_id],
+                      justify="start", align="center"),
         ]
     )
     return (auth_tab,)
