@@ -99,6 +99,7 @@ API_CONFIG = {
         "purchase_roas",
         "outbound_clicks",
         "outbound_clicks_ctr",
+        "KUR",
 
         # Video
         "video_p25_watched_actions",
@@ -156,6 +157,7 @@ API_CONFIG = {
         "video_avg_time_watched_actions": "float",
         "purchase_roas": "float",
         "website_purchase_roas": "float",
+        "KUR": "float",
 
         # Datetime
         "date_start": "datetime",

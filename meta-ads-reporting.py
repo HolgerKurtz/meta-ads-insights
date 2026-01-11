@@ -18,6 +18,7 @@ def _():
         fetch_data,
         process_data,
         enforce_dataframe_types,
+        calculate_custom_metrics,
     )
     return (
         API_CONFIG,
@@ -28,6 +29,7 @@ def _():
         mo,
         pd,
         process_data,
+        calculate_custom_metrics,
     )
 
 
@@ -240,12 +242,14 @@ def _(
     generated_url,
     pd,
     process_data,
+    calculate_custom_metrics,
 ):
     def meta_ads_insights(url):
         result = fetch_data(generated_url)
         cleaned_rows = process_data(result, conversion_goal.value)
         df = pd.DataFrame(cleaned_rows)
         df = enforce_dataframe_types(df)
+        df = calculate_custom_metrics(df, conversion_goal.value)
         return df
     return (meta_ads_insights,)
 

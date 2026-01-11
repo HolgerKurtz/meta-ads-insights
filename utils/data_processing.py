@@ -28,7 +28,9 @@ def build_url(acc_id, token, lvl, pst, inc, bds, flds, start, end):
     
     if flds:
         # specific fields requested, ensure conversion fields are included
-        combined_fields = list(set(flds + conversion_fields))
+        # Filter out custom metrics that are calculated locally (e.g., KUR)
+        api_fields = [f for f in flds if f != "KUR"]
+        combined_fields = list(set(api_fields + conversion_fields))
         params.append(f"fields={','.join(combined_fields)}")
     else:
         # no fields requested (all?), usually this param is required or defaults apply. 
@@ -198,4 +200,43 @@ def enforce_dataframe_types(df):
             except Exception:
                 pass
                 
+    return df
+
+def calculate_custom_metrics(df, goal):
+    """
+    Calculates custom metrics like KUR (Kosten-Umsatz-Relation).
+    KUR = Cost / Revenue (Value)
+    """
+    if df.empty:
+        return df
+
+    # Ensure goal is properly formatted to match column names
+    goal_title = goal.title()
+    value_col = f"Value {goal_title}"
+    
+    # Check if necessary columns exist
+    if "spend" in df.columns and value_col in df.columns:
+        # Calculate KUR: Cost / Revenue
+        # Handle division by zero: if Revenue is 0 or null, set KUR to NaN (None)
+        # This ensures averages ignore these rows instead of treating them as 0 or inf
+        
+        def calculate_kur(row):
+            cost = row.get("spend", 0.0)
+            revenue = row.get(value_col, 0.0)
+            
+            try:
+                cost = float(cost)
+                revenue = float(revenue)
+            except (ValueError, TypeError):
+                return None
+
+            if revenue != 0:
+                return cost / revenue
+            return None
+
+        df["KUR"] = df.apply(calculate_kur, axis=1)
+        
+        # Ensure it's float
+        df["KUR"] = pd.to_numeric(df["KUR"], errors='coerce')
+
     return df
